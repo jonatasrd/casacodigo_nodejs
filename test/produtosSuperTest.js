@@ -1,7 +1,9 @@
 var express = require('../config/express')()
 var request = require('supertest')(express);
+var DatabaseCleaner = require('database-cleaner');
 
 describe('#ProdutosController', function() {
+
     it('#listagem de produtos json', function (done) {
         request.get('/produtos')
             .set('Accept', 'application/json')
@@ -21,4 +23,12 @@ describe('#ProdutosController', function() {
             .send({titulo:"novo livro", preco:20.50, descricao:"livro de teste"})
             .expect(302, done)
     });
+    
+    afterEach(function(done){
+        var databaseCleaner = new DatabaseCleaner('mysql');
+        databaseCleaner.clean(express.infra.connectionFactory(), function() {
+          done();
+        });
+    });
+    
 });
